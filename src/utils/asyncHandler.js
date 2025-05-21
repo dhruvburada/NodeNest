@@ -1,13 +1,17 @@
+import { errorResponse } from "./responseFormatter.js";
+
 const asyncHandler = (fn) => async (req, res, next) => {
-    try {
-      await fn(req, res, next);
-    } catch (error) {
-      res.status(error.code || 500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
-  
-  module.exports = asyncHandler;
-  
+  try {
+    await fn(req, res, next);
+  } catch (error) {
+    const message =
+      error.message && error.message.trim() !== ""
+        ? error.message
+        : "Something went wrong";
+
+    const status = error.status || 500;
+    return errorResponse(res, message, status);
+  }
+};
+
+export default asyncHandler;
