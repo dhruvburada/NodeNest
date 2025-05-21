@@ -1,3 +1,7 @@
+
+import dotenv from 'dotenv';
+dotenv.config();
+
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 
@@ -11,14 +15,16 @@ export const uploadCloudinary = async(localFilePath) =>
 {
     if(!localFilePath){
         
-        return new Error("Local file path is required");
+        throw new Error("Local file path is required");
     }
     try{
         let response = await cloudinary.uploader.upload(localFilePath,{resource_type:"auto",});
         console.log("File Upload Successfull : ", response.url);
+        return response.url;
     }
     catch(err){
         //remove corrupted file due to failed upload from local dir
+        console.log(err);
         fs.unlinkSync(localFilePath);
     }
 }

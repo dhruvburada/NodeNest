@@ -4,6 +4,6 @@ import { upload } from "../middlewares/upload.middleware.js";
 
 const router = Router();
 
-router.post("/register", upload.fields({ name: "avtar", maxCount:1},{name:"coverImage",maxCount:1}), registerUser);
+router.post("/register", upload.fields([{ name: "avtar", maxCount:1},{name:"coverImage",maxCount:1}]), registerUser);
 
 export default router;

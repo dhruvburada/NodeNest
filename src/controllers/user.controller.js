@@ -15,24 +15,33 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   //check if email or username already exists
 
-  const existingUser = User.find({
+  const existingUser = await User.findOne({
     $or : [{email:email},{username:username}]
   })
+
+
 
   if(existingUser){
     throw createError(400,"User already exists");
   }
 
-  const avatarLocalPath = req.files?.avtar[0].path
-  const coverImagePath = req.files?.coverImagePath[0].path
+
+  const avatarLocalPath = req.files?.avtar?.[0]?.path
+  const coverImagePath = req.files?.coverImage?.[0]?.path
+
 
   if(!avatarLocalPath)
   {
     throw createError(400,"User Avtar image is required")
   }
 
-  const avtar = uploadCloudinary(avatarLocalPath);
-  const coverImage = uploadCloudinary(coverImagePath);
+  console.log(avatarLocalPath)
+  const avtar = await uploadCloudinary(avatarLocalPath);
+ 
+
+
+
+  const coverImageUrl = coverImagePath ? await uploadCloudinary(coverImagePath) : "";
 
   if(!avtar)
   {
@@ -40,7 +49,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   }
 
 
-  const createdUser = User.create({userName:username,email,password,fullName:name,avtar:avtar.url,coverImage:coverImage||""})
+  const createdUser = await User.create({userName:username,email,password,fullName:name,avtar:avtar,coverImage:coverImageUrl})
 
   if(!createdUser)
   {
